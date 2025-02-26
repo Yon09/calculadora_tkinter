@@ -39,20 +39,27 @@ def cambiar_signo():
         pantalla.delete(0, tk.END)
         pantalla.insert(tk.END, "Error")
 
-# Función para manejar las teclas del teclado físico
+# Función para manejar las teclas del teclado físico y el teclado numérico
 def manejar_tecla(event):
     tecla = event.keysym  # Captura el nombre de la tecla presionada
-    
-    if tecla.isdigit():  # Si es un número, lo escribe en la pantalla
-        click(tecla)
-    elif tecla in ["plus", "minus", "asterisk", "slash"]:  # Operadores matemáticos
+
+    numpad = {  
+        "KP_0": "0", "KP_1": "1", "KP_2": "2", "KP_3": "3", "KP_4": "4",
+        "KP_5": "5", "KP_6": "6", "KP_7": "7", "KP_8": "8", "KP_9": "9",
+        "KP_Decimal": ".", "KP_Add": "+", "KP_Subtract": "-", 
+        "KP_Multiply": "*", "KP_Divide": "/"
+    }
+
+    if tecla.isdigit() or tecla in numpad:  # Si es número (normal o numpad)
+        click(numpad.get(tecla, tecla))
+    elif tecla in ["plus", "minus", "asterisk", "slash"]:  # Operadores normales
         operadores = { "plus": "+", "minus": "-", "asterisk": "*", "slash": "/" }
         click(operadores[tecla])
     elif tecla == "Return":  # Enter para calcular
         calcular()
     elif tecla == "BackSpace":  # Borrar con la tecla Backspace
         borrar()
-    elif tecla == "period":  # Punto decimal
+    elif tecla in ["period", "KP_Decimal"]:  # Punto decimal
         click(".")
     elif tecla == "Escape":  # Escape para salir de la calculadora
         root.quit()
@@ -110,7 +117,7 @@ for i in range(6):
 for j in range(4):
     root.grid_columnconfigure(j, weight=1)
 
-# Vincular teclado físico con la función de manejo de teclas
+# Vincular teclado físico y numpad con la función de manejo de teclas
 root.bind("<Key>", manejar_tecla)
 
 # Ejecutar la app
