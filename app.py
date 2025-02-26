@@ -1,6 +1,6 @@
 import tkinter as tk
 
-# Función para actualizar la pantalla
+# Función para actualizar la pantalla con números y operadores
 def click(boton):
     if pantalla.get() == "0":
         pantalla.delete(0, tk.END)
@@ -9,7 +9,7 @@ def click(boton):
 # Función para calcular el resultado
 def calcular():
     try:
-        resultado = eval(pantalla.get().replace("X", "*"))  # Reemplazar X por * para la multiplicación
+        resultado = eval(pantalla.get().replace("X", "*"))  # Reemplazar X por * para multiplicación
         pantalla.delete(0, tk.END)
         pantalla.insert(tk.END, resultado)
     except:
@@ -20,6 +20,28 @@ def calcular():
 def borrar():
     pantalla.delete(0, tk.END)
     pantalla.insert(0, "0")
+
+# Función para cambiar el signo del número actual
+def cambiar_signo():
+    contenido = pantalla.get()
+
+    if contenido in ["", "0", "Error"]:  # No hacer nada si la pantalla está vacía o con error
+        return
+
+    try:
+        # Si el usuario está escribiendo un número, cambiar el signo del último número
+        if " " in contenido:  # Si hay operadores, cambiar el signo del último número ingresado
+            partes = contenido.split(" ")
+            partes[-1] = str(-float(partes[-1]))  # Cambiar el signo del último número
+            pantalla.delete(0, tk.END)
+            pantalla.insert(tk.END, " ".join(partes))
+        else:
+            # Si solo hay un número, cambiarlo de signo
+            pantalla.delete(0, tk.END)
+            pantalla.insert(tk.END, str(-float(contenido)))
+    except:
+        pantalla.delete(0, tk.END)
+        pantalla.insert(tk.END, "Error")
 
 # Crear ventana
 root = tk.Tk()
@@ -53,8 +75,11 @@ colores = {
 
 for fila, valores in enumerate(botones, 1):
     for col, valor in enumerate(valores):
-        color = colores["numeros"] if valor.isdigit() or valor == "." else colores["operadores"]
-        btn = tk.Button(root, text=valor, bg=color, fg="white", **boton_estilo, command=lambda v=valor: click(v))
+        if valor == "+/-":
+            btn = tk.Button(root, text=valor, bg=colores["especiales"], fg="white", **boton_estilo, command=cambiar_signo)
+        else:
+            color = colores["numeros"] if valor.isdigit() or valor == "." else colores["operadores"]
+            btn = tk.Button(root, text=valor, bg=color, fg="white", **boton_estilo, command=lambda v=valor: click(v))
         btn.grid(row=fila, column=col, padx=5, pady=5)
 
 # Botón de borrar
