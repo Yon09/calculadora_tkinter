@@ -30,6 +30,16 @@ def borrar_uno():
         pantalla.delete(0, tk.END)
         pantalla.insert(0, "0")
 
+# Función para borrar un número completo (cadena de dígitos)
+def borrar_numero():
+    contenido = pantalla.get()
+    if contenido == "0":
+        return
+    
+    nuevo_contenido = contenido.rstrip("0123456789.")  # Elimina solo números y punto decimal
+    pantalla.delete(0, tk.END)
+    pantalla.insert(0, nuevo_contenido if nuevo_contenido else "0")
+
 # Función para cambiar el signo del número actual
 def cambiar_signo():
     contenido = pantalla.get()
@@ -46,7 +56,7 @@ def cambiar_signo():
             pantalla.insert(tk.END, str(-float(contenido)))
     except:
         pantalla.delete(0, tk.END)
-        pantalla.insert(tk.END, "Error")
+        pantalla.insert(0, "Error")
 
 # Función para manejar las teclas del teclado físico y el teclado numérico
 def manejar_tecla(event):
@@ -66,8 +76,13 @@ def manejar_tecla(event):
         click(operadores[tecla])
     elif tecla in ["Return", "KP_Enter"]:  
         calcular()
-    elif tecla == "BackSpace":  
-        borrar_uno()
+    elif tecla == "BackSpace":
+        if event.state & 4:  # Shift + Backspace → Borra todo
+            borrar_todo()
+        elif event.state & 1:  # Control + Backspace → Borra un número completo
+            borrar_numero()
+        else:  # Solo Backspace → Borra un dígito
+            borrar_uno()
     elif tecla in ["period", "KP_Decimal"]:  
         click(".")
     elif tecla == "Escape":  
