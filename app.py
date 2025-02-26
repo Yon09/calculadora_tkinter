@@ -16,10 +16,19 @@ def calcular():
         pantalla.delete(0, tk.END)
         pantalla.insert(tk.END, "Error")
 
-# Función para borrar la pantalla
-def borrar():
+# Función para borrar la pantalla completamente
+def borrar_todo():
     pantalla.delete(0, tk.END)
     pantalla.insert(0, "0")
+
+# Función para borrar solo un dígito
+def borrar_uno():
+    contenido = pantalla.get()
+    if len(contenido) > 1:
+        pantalla.delete(len(contenido) - 1, tk.END)
+    else:
+        pantalla.delete(0, tk.END)
+        pantalla.insert(0, "0")
 
 # Función para cambiar el signo del número actual
 def cambiar_signo():
@@ -27,7 +36,7 @@ def cambiar_signo():
     if contenido in ["", "0", "Error"]:
         return
     try:
-        if " " in contenido:  
+        if " " in contenido:
             partes = contenido.split(" ")
             partes[-1] = str(-float(partes[-1]))  
             pantalla.delete(0, tk.END)
@@ -41,7 +50,7 @@ def cambiar_signo():
 
 # Función para manejar las teclas del teclado físico y el teclado numérico
 def manejar_tecla(event):
-    tecla = event.keysym  # Captura el nombre de la tecla presionada
+    tecla = event.keysym  
 
     numpad = {  
         "KP_0": "0", "KP_1": "1", "KP_2": "2", "KP_3": "3", "KP_4": "4",
@@ -50,20 +59,19 @@ def manejar_tecla(event):
         "KP_Multiply": "*", "KP_Divide": "/"
     }
 
-    if tecla.isdigit() or tecla in numpad:  # Si es número (normal o numpad)
+    if tecla.isdigit() or tecla in numpad:  
         click(numpad.get(tecla, tecla))
-    elif tecla in ["plus", "minus", "asterisk", "slash"]:  # Operadores normales
+    elif tecla in ["plus", "minus", "asterisk", "slash"]:  
         operadores = { "plus": "+", "minus": "-", "asterisk": "*", "slash": "/" }
         click(operadores[tecla])
-    elif tecla in ["Return", "KP_Enter"]:  # Soporta Enter normal y del Numpad
+    elif tecla in ["Return", "KP_Enter"]:  
         calcular()
-    elif tecla == "BackSpace":  # Borrar con la tecla Backspace
-        borrar()
-    elif tecla in ["period", "KP_Decimal"]:  # Punto decimal
+    elif tecla == "BackSpace":  
+        borrar_uno()
+    elif tecla in ["period", "KP_Decimal"]:  
         click(".")
-    elif tecla == "Escape":  # Escape para salir de la calculadora
+    elif tecla == "Escape":  
         root.quit()
-
 
 # Crear ventana
 root = tk.Tk()
@@ -92,6 +100,7 @@ colores = {
     "operadores": "#24B0D9",  
     "especiales": "#F3A81F",  
     "borrar": "#E0452D",  
+    "borrar_todo": "#D9534F",  
     "igual": "#24B0D9"  
 }
 
@@ -104,13 +113,17 @@ for fila, valores in enumerate(botones, 1):
             btn = tk.Button(root, text=valor, bg=color, fg="white", **boton_estilo, command=lambda v=valor: click(v))
         btn.grid(row=fila, column=col, padx=5, pady=5)
 
-# Botón de borrar
-btn_borrar = tk.Button(root, text="C", bg=colores["borrar"], fg="white", **boton_estilo, command=borrar)
-btn_borrar.grid(row=5, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
+# Botón de borrar un solo dígito
+btn_borrar = tk.Button(root, text="C", bg=colores["borrar"], fg="white", **boton_estilo, command=borrar_uno)
+btn_borrar.grid(row=5, column=0, padx=5, pady=5)
 
-# Botón de igual
-btn_igual = tk.Button(root, text="=", bg=colores["igual"], fg="white", **boton_estilo, command=calcular)
-btn_igual.grid(row=5, column=2, columnspan=2, sticky="nsew", padx=5, pady=5)
+# Botón de borrar todo (CC)
+btn_borrar_todo = tk.Button(root, text="CC", bg=colores["borrar_todo"], fg="white", font=("Arial", 16), height=2, bd=2, relief="ridge", command=borrar_todo)
+btn_borrar_todo.grid(row=5, column=1, columnspan=2, sticky="nsew", padx=5, pady=5)
+
+# Botón de igual (=)
+btn_igual = tk.Button(root, text="=", bg=colores["igual"], fg="white", font=("Arial", 16), height=2, bd=2, relief="ridge", command=calcular)
+btn_igual.grid(row=5, column=3, sticky="nsew", padx=5, pady=5)
 
 # Ajustar tamaño dinámico
 for i in range(6):
