@@ -1,6 +1,6 @@
 import tkinter as tk
 
-# Función para actualizar la pantalla con números y operadores
+# Función para actualizar la pantalla
 def click(boton):
     if pantalla.get() == "0":
         pantalla.delete(0, tk.END)
@@ -9,7 +9,7 @@ def click(boton):
 # Función para calcular el resultado
 def calcular():
     try:
-        resultado = eval(pantalla.get().replace("X", "*"))  # Reemplazar X por * para multiplicación
+        resultado = eval(pantalla.get().replace("X", "*"))  # Reemplazar X por *
         pantalla.delete(0, tk.END)
         pantalla.insert(tk.END, resultado)
     except:
@@ -24,24 +24,38 @@ def borrar():
 # Función para cambiar el signo del número actual
 def cambiar_signo():
     contenido = pantalla.get()
-
-    if contenido in ["", "0", "Error"]:  # No hacer nada si la pantalla está vacía o con error
+    if contenido in ["", "0", "Error"]:
         return
-
     try:
-        # Si el usuario está escribiendo un número, cambiar el signo del último número
-        if " " in contenido:  # Si hay operadores, cambiar el signo del último número ingresado
+        if " " in contenido:  
             partes = contenido.split(" ")
-            partes[-1] = str(-float(partes[-1]))  # Cambiar el signo del último número
+            partes[-1] = str(-float(partes[-1]))  
             pantalla.delete(0, tk.END)
             pantalla.insert(tk.END, " ".join(partes))
         else:
-            # Si solo hay un número, cambiarlo de signo
             pantalla.delete(0, tk.END)
             pantalla.insert(tk.END, str(-float(contenido)))
     except:
         pantalla.delete(0, tk.END)
         pantalla.insert(tk.END, "Error")
+
+# Función para manejar las teclas del teclado físico
+def manejar_tecla(event):
+    tecla = event.keysym  # Captura el nombre de la tecla presionada
+    
+    if tecla.isdigit():  # Si es un número, lo escribe en la pantalla
+        click(tecla)
+    elif tecla in ["plus", "minus", "asterisk", "slash"]:  # Operadores matemáticos
+        operadores = { "plus": "+", "minus": "-", "asterisk": "*", "slash": "/" }
+        click(operadores[tecla])
+    elif tecla == "Return":  # Enter para calcular
+        calcular()
+    elif tecla == "BackSpace":  # Borrar con la tecla Backspace
+        borrar()
+    elif tecla == "period":  # Punto decimal
+        click(".")
+    elif tecla == "Escape":  # Escape para salir de la calculadora
+        root.quit()
 
 # Crear ventana
 root = tk.Tk()
@@ -66,11 +80,11 @@ botones = [
 ]
 
 colores = {
-    "numeros": "#86B049",  # Verde claro
-    "operadores": "#24B0D9",  # Azul
-    "especiales": "#F3A81F",  # Naranja
-    "borrar": "#E0452D",  # Rojo
-    "igual": "#24B0D9"  # Azul
+    "numeros": "#86B049",  
+    "operadores": "#24B0D9",  
+    "especiales": "#F3A81F",  
+    "borrar": "#E0452D",  
+    "igual": "#24B0D9"  
 }
 
 for fila, valores in enumerate(botones, 1):
@@ -95,6 +109,9 @@ for i in range(6):
     root.grid_rowconfigure(i, weight=1)
 for j in range(4):
     root.grid_columnconfigure(j, weight=1)
+
+# Vincular teclado físico con la función de manejo de teclas
+root.bind("<Key>", manejar_tecla)
 
 # Ejecutar la app
 root.mainloop()
