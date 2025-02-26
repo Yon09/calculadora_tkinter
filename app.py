@@ -55,7 +55,7 @@ def manejar_tecla(event):
     elif tecla in ["plus", "minus", "asterisk", "slash"]:  # Operadores normales
         operadores = { "plus": "+", "minus": "-", "asterisk": "*", "slash": "/" }
         click(operadores[tecla])
-    elif tecla == "Return":  # Enter para calcular
+    elif tecla in ["Return", "KP_Enter"]:  # Soporta Enter normal y del Numpad
         calcular()
     elif tecla == "BackSpace":  # Borrar con la tecla Backspace
         borrar()
@@ -63,6 +63,7 @@ def manejar_tecla(event):
         click(".")
     elif tecla == "Escape":  # Escape para salir de la calculadora
         root.quit()
+
 
 # Crear ventana
 root = tk.Tk()
